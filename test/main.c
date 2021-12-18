@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <inttypes.h>
+
 #define IS_OKAY() {\
     Heap_Error_t err = Heap_GetError();\
     if (err != HEAP_OK) {\
@@ -17,14 +19,20 @@ intptr_t ABS(intptr_t a) {
     return a;
 }
 
+void format_uint64(uint64_t value, char str[]) {
+    sprintf(str, PRIx64, value);
+}
+
 int main() {
     uintptr_t size = CHEAP_ALLOC_SIZE;
-    printf("Max heap size: %llu KiB\n",
-        (uint64_t)CHEAP_CONFIG_MAX_HEAP_SIZE_KiB);
-    printf("Heap page allocation size: %llu KiB\n",
-        (uint64_t)CHEAP_CONFIG_PAGE_ALLOC_SIZE_KiB);
-    printf("Minimum allocation size: %llu B\n",
-        (uint64_t)CHEAP_CONFIG_MIN_ALLOC_SIZE);
+    char int_str[128];
+
+    format_uint64(CHEAP_CONFIG_MAX_HEAP_SIZE_KiB, int_str);
+    printf("Max heap size: %s KiB\n", int_str);
+    format_uint64(CHEAP_CONFIG_PAGE_ALLOC_SIZE_KiB, int_str);
+    printf("Heap page allocation size: %s KiB\n", int_str);
+    format_uint64(CHEAP_CONFIG_MIN_ALLOC_SIZE, int_str);
+    printf("Minimum allocation size: %s B\n", int_str);
 
     printf("Testing startup\n");
 

@@ -295,8 +295,8 @@ const char* Heap_GetString(Heap_Error_t err) {
         case HEAP_ERROR_MAX_MEMORY: return "Reached the maximum memory allowed by the configuration";
         case HEAP_ERROR_ALLOC_TO_BIG: return "Allocation is too big";
         case HEAP_ERROR_CANNOT_FREE: return "Memory is not owned by this heap";
-#ifdef __linux__
-        case HEAP_ERROR_PLATFORM: return "Linux error. See cerr for more info";
+#if defined(UNIX) || defined(__unix__)
+        case HEAP_ERROR_PLATFORM: return "Unix error. See cerr for more info";
 #else
         case HEAP_ERROR_PLATFORM: return "Windows error. See cerr for more info";
 #endif

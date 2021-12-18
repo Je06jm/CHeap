@@ -1,4 +1,4 @@
-import platform
+import os
 
 force_mingw = int(ARGUMENTS.get("force-mingw", 0)) == 1
 
@@ -9,14 +9,14 @@ if force_mingw:
 else:
     env = Environment()
 
-env["SYSTEM"] = platform.system().lower()
+env["SYSTEM"] = os.name()
 
 if force_mingw:
-    env["SYSTEM"] = "linux"
+    env["SYSTEM"] = "posix"
 
 use_debug = int(ARGUMENTS.get("debug", 0)) == 1
 
-if env["SYSTEM"] in ["linux", "darwin"]:
+if env["SYSTEM"] in ["posix"]:
     if use_debug:
         env.Append(CCFLAGS=["-g"])
     else:

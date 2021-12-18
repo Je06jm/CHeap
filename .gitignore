@@ -2,7 +2,11 @@
 *.dblite
 
 **/*.o
+**/*.obj
 
-libCHeap.a
+*.pdb
+
+*.a
 CHeapTest
-
+*.lib
+*.exe

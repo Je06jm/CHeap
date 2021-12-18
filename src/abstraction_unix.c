@@ -1,4 +1,4 @@
-#ifdef __linux__
+#if defined(UNIX) || defined(__unix__)
 
 #include <CHeap/abstraction.h>
 #include <CHeap/config.h>

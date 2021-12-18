@@ -16,6 +16,11 @@ There is also a debug flag
 debug=1
 ```
 
+On windows, you can force scons to use mingw
+```
+force-mingw=1
+```
+
 ### Static Target
 The static target will create a static library named CHeap
 
