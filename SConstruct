@@ -9,7 +9,7 @@ if force_mingw:
 else:
     env = Environment()
 
-env["SYSTEM"] = os.name()
+env["SYSTEM"] = os.name
 
 if force_mingw:
     env["SYSTEM"] = "posix"
