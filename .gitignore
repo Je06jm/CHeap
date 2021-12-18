@@ -1,0 +1,8 @@
+.vscode
+*.dblite
+
+**/*.o
+
+libCHeap.a
+CHeapTest
+
