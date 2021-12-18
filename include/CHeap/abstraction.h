@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-void* AllocPage(void* addr);
+void* AllocPage();
 void MemoryZero(void* addr, uintptr_t size);
 void FreePage(void* addr);
 

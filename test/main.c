@@ -12,17 +12,18 @@
         exit(EXIT_FAILURE);\
     }}
 
-uintptr_t ABS(uintptr_t a) {
-    return a & (1 << (sizeof(uintptr_t) - 1)) ? -a : a;
+intptr_t ABS(intptr_t a) {
+    a = a < 0 ? -a : a;
+    return a;
 }
 
 int main() {
     uintptr_t size = CHEAP_ALLOC_SIZE;
-    printf("Max heap size: %lu KiB\n",
+    printf("Max heap size: %llu KiB\n",
         (uint64_t)CHEAP_CONFIG_MAX_HEAP_SIZE_KiB);
-    printf("Heap page allocation size: %lu KiB\n",
+    printf("Heap page allocation size: %llu KiB\n",
         (uint64_t)CHEAP_CONFIG_PAGE_ALLOC_SIZE_KiB);
-    printf("Minimum allocation size: %lu B\n",
+    printf("Minimum allocation size: %llu B\n",
         (uint64_t)CHEAP_CONFIG_MIN_ALLOC_SIZE);
 
     printf("Testing startup\n");
@@ -125,13 +126,13 @@ int main() {
 
     printf("Testing large heap allocations\n");
 
-    a = Heap_Alloc(size / 2);
+    a = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
-    b = Heap_Alloc(size / 2);
+    b = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
-    c = Heap_Alloc(size / 2);
+    c = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
-    d = Heap_Alloc(size / 2);
+    d = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
 
     printf("Testing large allocation addresses\n");
@@ -158,13 +159,13 @@ int main() {
 
     printf("Testing re-allocation of large allocations\n");
 
-    a = Heap_Alloc(size / 2);
+    a = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
-    b = Heap_Alloc(size / 2);
+    b = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
-    c = Heap_Alloc(size / 2);
+    c = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
-    d = Heap_Alloc(size / 2);
+    d = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
 
     printf("Testing free of re-allocated large allocations\n");
@@ -178,15 +179,50 @@ int main() {
     Heap_Free(d);
     IS_OKAY();
 
+    printf("Testing free of some large allocations\n");
+    a = Heap_Alloc(size * 2 / 3);
+    IS_OKAY();
+    b = Heap_Alloc(size * 2 / 3);
+    IS_OKAY();
+    c = Heap_Alloc(size * 2 / 3);
+    IS_OKAY();
+    d = Heap_Alloc(size * 2 / 3);
+    IS_OKAY();
+    *d = 5;
+
+    Heap_Free(c);
+    IS_OKAY();
+    Heap_Free(d);
+    IS_OKAY();
+    
+    c = Heap_Alloc(size * 2 / 3);
+    IS_OKAY();
+
+    assert(*c == 5);
+
+    Heap_Free(c);
+    IS_OKAY();
+
+    printf("Testing freeing an invalid memory address\n");
+    {
+        Heap_Free((void*)0xDEADBEEF);
+        Heap_Error_t err = Heap_GetError();
+        assert(err == HEAP_ERROR_CANNOT_FREE);
+    }
+
+    printf("Testing freeing an NULL pointer\n");
+    Heap_Free(NULL);
+    IS_OKAY();
+
     printf("Re-allocating large allocations for final test\n");
 
-    a = Heap_Alloc(size / 2);
+    a = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
-    b = Heap_Alloc(size / 2);
+    b = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
-    c = Heap_Alloc(size / 2);
+    c = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
-    d = Heap_Alloc(size / 2);
+    d = Heap_Alloc(size * 2 / 3);
     IS_OKAY();
 
     printf("Testing heap finish with large allocations\n");

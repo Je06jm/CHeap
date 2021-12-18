@@ -40,7 +40,7 @@ bool Heap_Init() {
         return false;
     }
 
-    first_page = AllocPage(NULL);
+    first_page = AllocPage();
 
     if (first_page == NULL) {
         heap_error = HEAP_ERROR_NO_MEMORY;
@@ -50,7 +50,7 @@ bool Heap_Init() {
         return false;
     }
 
-    MemoryZero(first_page, CHEAP_ALLOC_SIZE);
+    MemoryZero(first_page, sizeof(HeapPage_t));
     pages_allocated++;
     
     return true;
@@ -75,10 +75,10 @@ void* Heap_Alloc(uintptr_t size) {
         size;
 
     HeapPage_t* page = first_page;
-    HeapEntry_t* current = &page->entries[0];
 
 find_next_free_entry:;
 
+    HeapEntry_t* current = &page->entries[0];
     while (current->next != NULL) {
         if ((current->size >= size) && !current->used) {
             goto alloc_data;
@@ -123,7 +123,7 @@ find_next_free_entry:;
                 return NULL;
             }
 
-            new_page = AllocPage(NULL);
+            new_page = AllocPage();
 
             if (new_page == NULL) {
                 heap_error = HEAP_ERROR_NO_MEMORY;
@@ -133,7 +133,7 @@ find_next_free_entry:;
                 return NULL;
             }
         
-            MemoryZero(new_page, CHEAP_ALLOC_SIZE);
+            MemoryZero(new_page, sizeof(HeapPage_t));
             pages_allocated++;
         }
 

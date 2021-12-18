@@ -2,22 +2,41 @@
 
 #include <CHeap/abstraction.h>
 #include <CHeap/config.h>
+#include <CHeap/heap.h>
 
 #include <Windows.h>
+
 #include <stdbool.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void* AllocPage(void* addr) {
-    return VirtualAlloc(
-        addr,
+void* AllocPage() {
+    void* ptr = VirtualAlloc(
+        NULL,
         CHEAP_ALLOC_SIZE,
         MEM_COMMIT | MEM_RESERVE,
-        PAGE_EXECUTE_READWRITE
         PAGE_READWRITE
     );
+
+    if (ptr == NULL) {
+        uint32_t err = GetLastError();
+        
+        switch (err) {
+            case ERROR_NOT_ENOUGH_MEMORY:
+            case ERROR_OUTOFMEMORY:
+            case ERROR_COMMITMENT_LIMIT:
+                // Out of memory
+                return NULL;
+            default:
+                fprintf(stderr, "VirtualAlloc error: %u\n", err);
+                return FULL_PTR;
+        }
+    }
+
+    return ptr;
 }
 
 void MemoryZero(void* addr, uintptr_t size) {

@@ -1,8 +1,20 @@
 import platform
-env = Environment()
+
+force_mingw = int(ARGUMENTS.get("force-mingw", 0)) == 1
+
+env = None
+
+if force_mingw:
+    env = Environment(tools=["mingw"])
+else:
+    env = Environment()
+
 env["SYSTEM"] = platform.system().lower()
 
-use_debug = ARGUMENTS.get('debug', 0) == 1
+if force_mingw:
+    env["SYSTEM"] = "linux"
+
+use_debug = int(ARGUMENTS.get("debug", 0)) == 1
 
 if env["SYSTEM"] in ["linux", "darwin"]:
     if use_debug:
@@ -16,7 +28,7 @@ else:
     if use_debug:
         env.Append(CCFLAGS=["/Zi"])
     else:
-        env.Append(CCFLAGS=["/O3"])
+        env.Append(CCFLAGS=["/O2"])
 
     env.Append(CCFLAGS=["/I./include/"])
 
